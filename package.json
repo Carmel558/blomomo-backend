@@ -1,0 +1,70 @@
+{
+  "name": "BloMoMo_server",
+  "version": "1.0.0",
+  "description": "A simple NestJS application",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.4.18",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^10.4.18",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/swagger": "^8.1.0",
+    "@prisma/client": "^6.1.0",
+    "@types/body-parser": "^1.19.5",
+    "@types/compression": "^1.7.5",
+    "@types/helmet": "^4.0.0",
+    "@types/nodemailer": "^6.4.17",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "compression": "^1.7.5",
+    "express": "^4.21.2",
+    "google-libphonenumber": "^3.2.40",
+    "helmet": "^8.0.0",
+    "install": "^0.13.0",
+    "nestjs-pino": "^4.2.0",
+    "nodemailer": "^7.0.3",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "rxjs": "^7.0.0",
+    "source-map-support": "^0.5.21",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^9.0.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.0",
+    "@types/google-libphonenumber": "^7.4.30",
+    "@types/passport-jwt": "^4.0.1",
+    "jest": "^27.0.0",
+    "ts-jest": "^27.0.0",
+    "ts-loader": "^9.0.0",
+    "typescript": "^4.5.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "testEnvironment": "node"
+  }
+}

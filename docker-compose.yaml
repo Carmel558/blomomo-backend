@@ -1,0 +1,16 @@
+version: '3'
+volumes:
+  postgres:
+services:
+  database:
+    image: postgres:14.5
+    env_file:
+      - .env
+    container_name: ${DOCKER_PROJECT_NAME}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      # Create databases on container init
+      - ./sql/create-databases.sql:/docker-entrypoint-initdb.d/create-databases.sql
+    ports:
+      - ${POSTGRES_PORT}:5432
+    restart: always

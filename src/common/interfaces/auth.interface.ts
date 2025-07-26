@@ -1,9 +1,9 @@
-import { UserType } from "../enums/user-type.enum";
+import { UserRole } from "@prisma/client";
 
 export interface JwtPayload {
   sub: number;
   email: string;
-  userType: UserType;
+  userType: UserRole;
   phoneNumber: number;
 }
 
@@ -15,7 +15,7 @@ export interface AuthResponse {
     email?: string | null;
     firstName?: string | null;
     lastName?: string | null;
-    userType: UserType;
+    userType: UserRole;
     phoneNumber: string | null;
   };
 }
@@ -28,7 +28,7 @@ export interface AuthResponseAdmin {
     email?: string | null;
     firstName?: string | null;
     lastName?: string | null;
-    userType: UserType;
+    userType: UserRole;
     phoneNumber?: string | null;
   };
 }

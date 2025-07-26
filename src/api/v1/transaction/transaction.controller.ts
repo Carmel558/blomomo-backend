@@ -1,4 +1,3 @@
-// src/transaction/controllers/transaction.controller.ts
 import {
   Controller,
   Get,
@@ -18,13 +17,11 @@ import { TransactionQueryDto } from './dto/create-transaction.dto';
 import { UpdateTransactionStatusDto } from './dto/update-transaction.dto';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-// import { Roles } from 'src/common/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
-@Controller('transactions')
+@Controller('api/v1/transactions')
 @UseGuards(JwtAuthGuard)
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
@@ -85,8 +82,6 @@ export class TransactionController {
   }
 
   @Patch(':id/status')
-  @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Mettre à jour le statut d\'une transaction (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Statut de la transaction mis à jour' })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })
@@ -100,8 +95,6 @@ export class TransactionController {
 
   // Endpoints spécifiques pour les admins
   @Get('admin/all')
-  @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Obtenir toutes les transactions (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Toutes les transactions récupérées' })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })
@@ -110,8 +103,6 @@ export class TransactionController {
   }
 
   @Get('admin/stats')
-  @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Obtenir les statistiques globales (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Statistiques globales récupérées' })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })
@@ -120,8 +111,6 @@ export class TransactionController {
   }
 
   @Get('user/:userId')
-  @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Obtenir les transactions d\'un utilisateur spécifique (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Transactions de l\'utilisateur récupérées' })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })

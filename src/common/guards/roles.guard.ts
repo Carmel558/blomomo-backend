@@ -1,6 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserType } from '../enums/user-type.enum';
+import { UserRole } from '@prisma/client';
+
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -8,7 +9,7 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     
-    const requiredRoles = this.reflector.getAllAndOverride<UserType[]>('roles', [
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>('roles', [
       context.getHandler(),
       context.getClass(),
     ]);

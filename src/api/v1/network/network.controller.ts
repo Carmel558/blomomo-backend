@@ -16,19 +16,19 @@ import { UpdateNetworkDto } from './dto/update-network.dto';
 import { NetworkResponseDto } from './dto/network-response.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-// import { Roles } from 'src/common/decorators/roles.decorator';
-// import { UserRole } from '@prisma/client';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('networks')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('networks')
+@Controller('api/v1/networks')
 export class NetworkController {
   constructor(private readonly networkService: NetworkService) {}
 
   @Post()
   @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
   @ApiOperation({ summary: 'Créer un nouveau réseau (Admin seulement)' })
   @ApiResponse({ status: 201, description: 'Réseau créé avec succès', type: NetworkResponseDto })
   @ApiResponse({ status: 409, description: 'Conflit - Réseau existe déjà' })
@@ -45,7 +45,7 @@ export class NetworkController {
 
   @Get(':id')
   @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
   @ApiOperation({ summary: 'Récupérer un réseau par ID (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Détails du réseau', type: NetworkResponseDto })
   @ApiResponse({ status: 404, description: 'Réseau non trouvé' })
@@ -55,7 +55,7 @@ export class NetworkController {
 
   @Get(':id/stats')
   @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
   @ApiOperation({ summary: 'Récupérer les statistiques d\'un réseau (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Statistiques du réseau' })
   @ApiResponse({ status: 404, description: 'Réseau non trouvé' })
@@ -65,7 +65,7 @@ export class NetworkController {
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  // @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUB_ADMIN)
   @ApiOperation({ summary: 'Mettre à jour un réseau (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Réseau mis à jour', type: NetworkResponseDto })
   @ApiResponse({ status: 404, description: 'Réseau non trouvé' })
@@ -79,7 +79,7 @@ export class NetworkController {
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  // // @Roles(UserRole.ADMIN)
+  // @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Supprimer un réseau (Admin seulement)' })
   @ApiResponse({ status: 200, description: 'Réseau supprimé avec succès' })
   @ApiResponse({ status: 404, description: 'Réseau non trouvé' })

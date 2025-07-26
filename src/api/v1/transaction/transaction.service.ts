@@ -37,7 +37,6 @@ export interface PaginatedResponse<T> {
 export class TransactionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Méthode pour obtenir toutes les transactions avec filtres et pagination
   async findAllWithFilters(
     userId?: number, 
     filters: TransactionFilters = {}
@@ -56,20 +55,18 @@ export class TransactionService {
       endDate
     } = filters;
 
-    // Validation de la pagination
+    
     const validatedPage = Math.max(1, Number(page));
     const validatedSize = Math.min(100, Math.max(1, Number(size))); // Maximum 100 éléments par page
     const skip = (validatedPage - 1) * validatedSize;
 
-    // Construction du where clause
+    
     const where: any = {};
 
-    // Filtrer par utilisateur si spécifié ou si c'est un utilisateur normal
     if (userId) {
       where.userId = userId;
     }
-
-    // Filtres additionnels
+    
     if (status) {
       where.status = status;
     }
@@ -169,7 +166,6 @@ export class TransactionService {
     };
   }
 
-  // Méthode pour obtenir les statistiques avec filtres
   async getTransactionStats(userId?: number, filters: TransactionFilters = {}) {
     const where: any = {};
     
@@ -177,7 +173,6 @@ export class TransactionService {
       where.userId = userId;
     }
 
-    // Appliquer les mêmes filtres que pour la liste
     if (filters.status) {
       where.status = filters.status;
     }
@@ -232,24 +227,15 @@ export class TransactionService {
 
   async create(userId: number, createTransactionDto: CreateTransactionDto){
     let clientId = createTransactionDto.clientId;
-    console.log(userId)
-    // const user = await this.prisma.user.findUnique({
-    //   where: { id: userId },
-    // });
-
-    // if(!user) {
-    //   throw new NotFoundException('Utilisateur non trouvé');
-    // }
-    // Validation : soit clientId soit phoneNumber doit être fourni
+    
     if (!clientId && !createTransactionDto.phoneNumber) {
       throw new BadRequestException('Vous devez fournir soit un ID client soit un numéro de téléphone');
     }
 
-    // Si phoneNumber est fourni, chercher ou créer le client
     if (createTransactionDto.phoneNumber) {
-      clientId = await this.findOrCreateClient(createTransactionDto);
+      clientId = await this.findOrCreateClient(userId, createTransactionDto);
     } else {
-      // Vérifier que le client existe si clientId est fourni
+      
       const client = await this.prisma.client.findUnique({
         where: { id: clientId },
       });
@@ -328,11 +314,11 @@ export class TransactionService {
     return transaction;
   }
 
-  private async findOrCreateClient(transactionData: CreateTransactionDto): Promise<number> {
+  private async findOrCreateClient(userId: number, transactionData: CreateTransactionDto): Promise<number> {
     const { phoneNumber, firstName, lastName, email } = transactionData;
 
-    let client = await this.prisma.client.findUnique({
-      where: { phoneNumber: phoneNumber! },
+    let client = await this.prisma.client.findFirst({
+      where: { phoneNumber: phoneNumber!, userId },
     });
 
     if (!client) {
@@ -347,7 +333,7 @@ export class TransactionService {
 
       if (email) {
         const existingClientWithEmail = await this.prisma.client.findUnique({
-          where: { email },
+          where: { email, userId },
         });
 
         if (existingClientWithEmail) {
@@ -356,7 +342,7 @@ export class TransactionService {
       }
 
       client = await this.prisma.client.create({
-        data: clientData,
+        data: { ...clientData, userId},
       });
     }
 

@@ -8,6 +8,14 @@ export interface IClient {
     updatedAt: Date;
 }
 
+export type CreateClientData = {
+  phoneNumber: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+  userId: number; 
+};
+
 export interface ICreateClient {
     firstName: string;
     lastName: string;

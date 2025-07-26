@@ -19,18 +19,23 @@ model User {
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
   mobileMoneyAccount    MobileMoneyAccount?   
-  transactions          Transaction[]         
+  transactions          Transaction[]
+  clients               Client[]         
 }
 
 model Client {
   id                 Int           @id @default(autoincrement())
   firstName          String?
   lastName           String?
-  phoneNumber        String        @unique
+  phoneNumber        String
+  userId             Int
+  user               User          @relation(fields: [userId], references: [id])        
   email              String?       @unique
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   transactions       Transaction[]
+
+  @@unique([phoneNumber, userId])
 }
 
 model MobileMoneyAccount {

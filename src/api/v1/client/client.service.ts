@@ -19,7 +19,6 @@ export class ClientService {
       throw new NotFoundException('Utilisateur non trouvé');
     }
 
-    // Correction 1: Utiliser findFirst au lieu de findUnique car phoneNumber+userId n'est pas une contrainte unique
     const existingClient = await this.prisma.client.findFirst({
       where: { 
         phoneNumber: createClientDto.phoneNumber, 
@@ -30,7 +29,6 @@ export class ClientService {
     if (existingClient) {
       throw new ConflictException('Un client avec ce numéro de téléphone existe déjà');
     }
-    console.log(userId)
   
     if (createClientDto.email) {
       const existingClientWithEmail = await this.prisma.client.findUnique({
@@ -42,8 +40,7 @@ export class ClientService {
       }
     }
   
-    // Correction principale: Utiliser soit la relation, soit le mode unchecked
-    // Option 1: Avec relation (recommandé)
+   
     const client = await this.prisma.client.create({
       data: {
         phoneNumber: createClientDto.phoneNumber,

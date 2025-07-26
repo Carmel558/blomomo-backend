@@ -18,6 +18,7 @@ import { UpdateTransactionStatusDto } from './dto/update-transaction.dto';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { TransactionResponseDto, TransactionResponseListDto } from './dto/reponse-transaction.dto';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -28,7 +29,7 @@ export class TransactionController {
 
   @Post()
   @ApiOperation({ summary: 'Créer une nouvelle transaction' })
-  @ApiResponse({ status: 201, description: 'Transaction créée avec succès' })
+  @ApiResponse({ status: 201, description: 'Transaction créée avec succès', example: TransactionResponseDto })
   @ApiResponse({ status: 400, description: 'Données invalides' })
   @ApiResponse({ status: 404, description: 'Client ou réseau non trouvé' })
   async create(@Request() req: any, @Body() createTransactionDto: CreateTransactionDto) {
@@ -38,7 +39,7 @@ export class TransactionController {
 
   @Get()
   @ApiOperation({ summary: 'Obtenir toutes les transactions avec pagination et filtres' })
-  @ApiResponse({ status: 200, description: 'Liste des transactions récupérée avec succès' })
+  @ApiResponse({ status: 200, description: 'Liste des transactions récupérée avec succès', example: TransactionResponseListDto })
   async findAll(@Request() req: any, @Query() query: TransactionQueryDto) {
     const userId = req.user.role === UserRole.ADMIN ? query.userId : req.user.sub;
     return this.transactionService.findAllWithFilters(userId, query);
@@ -46,14 +47,14 @@ export class TransactionController {
 
   @Get('my-transactions')
   @ApiOperation({ summary: 'Obtenir mes transactions' })
-  @ApiResponse({ status: 200, description: 'Liste des transactions de l\'utilisateur connecté' })
+  @ApiResponse({ status: 200, description: 'Liste des transactions de l\'utilisateur connecté', example: TransactionResponseListDto })
   async getMyTransactions(@Request() req: any, @Query() query: TransactionQueryDto) {
     return this.transactionService.findAllWithFilters(req.user.sub, query);
   }
 
   @Get('stats')
   @ApiOperation({ summary: 'Obtenir les statistiques des transactions' })
-  @ApiResponse({ status: 200, description: 'Statistiques récupérées avec succès' })
+  @ApiResponse({ status: 200, description: 'Statistiques récupérées avec succès', example: TransactionResponseListDto })
   async getStats(@Request() req: any, @Query('userId', ParseIntPipe) userId?: number) {
     // Si l'utilisateur n'est pas admin, il ne peut voir que ses propres stats
     const targetUserId = req.user.role === UserRole.ADMIN ? userId : req.user.sub;
@@ -62,7 +63,7 @@ export class TransactionController {
 
   @Get('clients/search')
   @ApiOperation({ summary: 'Rechercher des clients par numéro de téléphone' })
-  @ApiResponse({ status: 200, description: 'Liste des clients trouvés' })
+  @ApiResponse({ status: 200, description: 'Liste des clients trouvés', example: TransactionResponseListDto })
   async searchClients(
     @Query('phoneNumber') phoneNumber: string,
     @Query('limit', ParseIntPipe) limit: number = 5
@@ -75,15 +76,15 @@ export class TransactionController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtenir une transaction par ID' })
-  @ApiResponse({ status: 200, description: 'Transaction trouvée' })
+  @ApiResponse({ status: 200, description: 'Transaction trouvée', example: TransactionResponseDto })
   @ApiResponse({ status: 404, description: 'Transaction non trouvée' })
   async findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
     return this.transactionService.findOne(id, req.user.role, req.user.sub);
   }
 
   @Patch(':id/status')
-  @ApiOperation({ summary: 'Mettre à jour le statut d\'une transaction (Admin seulement)' })
-  @ApiResponse({ status: 200, description: 'Statut de la transaction mis à jour' })
+  @ApiOperation({ summary: 'Mettre à jour le statut d\'une transaction ' })
+  @ApiResponse({ status: 200, description: 'Statut de la transaction mis à jour', example: TransactionResponseDto })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })
   @ApiResponse({ status: 404, description: 'Transaction non trouvée' })
   async updateStatus(
@@ -95,24 +96,24 @@ export class TransactionController {
 
   // Endpoints spécifiques pour les admins
   @Get('admin/all')
-  @ApiOperation({ summary: 'Obtenir toutes les transactions (Admin seulement)' })
-  @ApiResponse({ status: 200, description: 'Toutes les transactions récupérées' })
+  @ApiOperation({ summary: 'Obtenir toutes les transactions ' })
+  @ApiResponse({ status: 200, description: 'Toutes les transactions récupérées', example: TransactionResponseListDto })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })
   async findAllForAdmin(@Query() query: TransactionQueryDto) {
     return this.transactionService.findAllWithFilters(undefined, query);
   }
 
   @Get('admin/stats')
-  @ApiOperation({ summary: 'Obtenir les statistiques globales (Admin seulement)' })
-  @ApiResponse({ status: 200, description: 'Statistiques globales récupérées' })
+  @ApiOperation({ summary: 'Obtenir les statistiques globales ' })
+  @ApiResponse({ status: 200, description: 'Statistiques globales récupérées', example: TransactionResponseListDto })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })
   async getGlobalStats() {
     return this.transactionService.getTransactionStats();
   }
 
   @Get('user/:userId')
-  @ApiOperation({ summary: 'Obtenir les transactions d\'un utilisateur spécifique (Admin seulement)' })
-  @ApiResponse({ status: 200, description: 'Transactions de l\'utilisateur récupérées' })
+  @ApiOperation({ summary: 'Obtenir les transactions d\'un utilisateur spécifique ' })
+  @ApiResponse({ status: 200, description: 'Transactions de l\'utilisateur récupérées', example: TransactionResponseListDto })
   @ApiResponse({ status: 403, description: 'Accès refusé - Admin requis' })
   async findByUser(
     @Param('userId', ParseIntPipe) userId: number,

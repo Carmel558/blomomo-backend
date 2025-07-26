@@ -17,15 +17,28 @@ export class NetworkService {
       throw new ConflictException('Un réseau avec ce nom existe déjà');
     }
 
-    return this.prisma.network.create({
+   const network = await this.prisma.network.create({
       data: createNetworkDto,
     });
+
+    return {
+      data: network,
+      status: 201,
+      message: 'Réseau créé avec succès',
+    }
   }
 
   async findAll(): Promise<any> {
-    return this.prisma.network.findMany({
+    const network = await this.prisma.network.findMany({
       orderBy: { name: 'asc' },
     });
+
+    return {
+      data: network,
+      status: 200,
+      message: 'Liste des réseaux récupérée avec succès',
+    };
+
   }
 
   async findOne(id: number): Promise<any> {
@@ -37,7 +50,11 @@ export class NetworkService {
       throw new NotFoundException(`Réseau avec l'ID ${id} non trouvé`);
     }
 
-    return network;
+    return {
+      data: network,
+      status: 200,
+      message: 'Réseau récupéré avec succès',
+    };
   }
 
   async update(id: number, updateNetworkDto: UpdateNetworkDto): Promise<any> {
@@ -53,14 +70,20 @@ export class NetworkService {
       }
     }
 
-    return this.prisma.network.update({
+    const networkUpdate= await this.prisma.network.update({
       where: { id },
       data: updateNetworkDto,
     });
+
+    return {
+      data: networkUpdate,
+      status: 200,
+      message: 'Réseau mis à jour avec succès',
+    }
   }
 
-  async remove(id: number): Promise<void> {
-    await this.findOne(id);
+  async remove(id: number){
+    const network = await this.findOne(id);
 
     // Vérifier si le réseau a des comptes mobile money ou des transactions
     const [mobileMoneyAccountCount, transactionCount] = await Promise.all([
@@ -77,6 +100,12 @@ export class NetworkService {
     await this.prisma.network.delete({
       where: { id },
     });
+
+    return {
+      data: network,
+      message: 'Réseau supprimé avec succès',
+      status: 200,
+    }
   }
 
   async getNetworkStats(id: number) {

@@ -15,7 +15,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@ne
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
-import { ClientResponseDto } from './dto/client.response.dto';
+import { ClientResponseDto, ClientResponseListeDto } from './dto/client.response.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 
@@ -27,7 +27,7 @@ export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Créer un nouveau client (Admin seulement)' })
+  @ApiOperation({ summary: 'Créer un nouveau client' })
   @ApiResponse({ status: 201, description: 'Client créé avec succès', type: ClientResponseDto })
   @ApiResponse({ status: 409, description: 'Conflit - Client existe déjà' })
   async create(@Request() req: any,@Body() createClientDto: CreateClientDto) {
@@ -35,22 +35,22 @@ export class ClientController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Récupérer tous les clients (Admin seulement)' })
-  @ApiResponse({ status: 200, description: 'Liste des clients', type: [ClientResponseDto] })
+  @ApiOperation({ summary: 'Récupérer tous les clients' })
+  @ApiResponse({ status: 200, description: 'Liste des clients', type: ClientResponseListeDto })
   async findAll(){
     return this.clientService.findAll();
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'Rechercher des clients (Admin seulement)' })
+  @ApiOperation({ summary: 'Rechercher des clients' })
   @ApiQuery({ name: 'q', description: 'Terme de recherche' })
-  @ApiResponse({ status: 200, description: 'Résultats de recherche', type: [ClientResponseDto] })
+  @ApiResponse({ status: 200, description: 'Résultats de recherche', type: ClientResponseListeDto })
   async search(@Query('q') query: string){
     return this.clientService.search(query);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Récupérer un client par ID (Admin seulement)' })
+  @ApiOperation({ summary: 'Récupérer un client par ID' })
   @ApiResponse({ status: 200, description: 'Détails du client', type: ClientResponseDto })
   @ApiResponse({ status: 404, description: 'Client non trouvé' })
   async findOne(@Param('id', ParseIntPipe) id: number) {
@@ -58,7 +58,7 @@ export class ClientController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Mettre à jour un client (Admin seulement)' })
+  @ApiOperation({ summary: 'Mettre à jour un client' })
   @ApiResponse({ status: 200, description: 'Client mis à jour', type: ClientResponseDto })
   @ApiResponse({ status: 404, description: 'Client non trouvé' })
   @ApiResponse({ status: 409, description: 'Conflit - Données en double' })
@@ -70,12 +70,12 @@ export class ClientController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Supprimer un client (Admin seulement)' })
-  @ApiResponse({ status: 200, description: 'Client supprimé avec succès' })
+  @ApiOperation({ summary: 'Supprimer un client' })
+  @ApiResponse({ status: 200, description: 'Client supprimé avec succès', type: ClientResponseDto })
   @ApiResponse({ status: 404, description: 'Client non trouvé' })
   @ApiResponse({ status: 409, description: 'Conflit - Client a des transactions' })
   async remove(@Param('id', ParseIntPipe) id: number) {
-    await this.clientService.remove(id);
-    return { message: 'Client supprimé avec succès' };
+   return await this.clientService.remove(id);
+     
   }
 }

@@ -40,7 +40,7 @@ export class TransactionService {
   async findAllWithFilters(
     userId?: number, 
     filters: TransactionFilters = {}
-  ): Promise<PaginatedResponse<any>> {
+  ) {
     const {
       page = 1,
       size = 10,
@@ -155,7 +155,7 @@ export class TransactionService {
 
     return {
       data: transactions,
-      pagination: {
+      meta: {
         total,
         page: validatedPage,
         size: validatedSize,
@@ -163,6 +163,8 @@ export class TransactionService {
         hasNext: validatedPage < totalPages,
         hasPrev: validatedPage > 1,
       },
+      status: 200,
+      message: 'Transactions récupérées avec succès',
     };
   }
 
@@ -311,7 +313,11 @@ export class TransactionService {
       },
     });
 
-    return transaction;
+    return {
+      data: transaction,
+      status: 201,
+      message: 'Transaction créée avec succès',
+    };
   }
 
   private async findOrCreateClient(userId: number, transactionData: CreateTransactionDto): Promise<number> {
@@ -351,7 +357,7 @@ export class TransactionService {
 
   // Méthode pour obtenir les suggestions de clients basées sur le numéro
   async searchClientsByPhone(phoneNumber: string, limit: number = 5) {
-    return this.prisma.client.findMany({
+   const client = await this.prisma.client.findMany({
       where: {
         phoneNumber: {
           contains: phoneNumber,
@@ -369,6 +375,12 @@ export class TransactionService {
         createdAt: 'desc',
       },
     });
+
+    return {
+      data: client,
+      status: 200,
+      message: 'Clients trouvés',
+    }
   }
 
   async findOne(id: number, userRole: UserRole, userId?: number){
@@ -413,7 +425,11 @@ export class TransactionService {
       throw new NotFoundException('Transaction non trouvée');
     }
 
-    return transaction;
+    return {
+      data: transaction,
+      status: 200,
+      message: 'Transaction récupérée avec succès',
+    };
   }
 
   async updateStatus(id: number, status: TransactionStatus){
@@ -425,7 +441,7 @@ export class TransactionService {
       throw new NotFoundException('Transaction non trouvée');
     }
 
-    return this.prisma.transaction.update({
+    const transationUpate = await this.prisma.transaction.update({
       where: { id },
       data: { status },
       include: {
@@ -455,5 +471,11 @@ export class TransactionService {
         },
       },
     });
+
+    return {
+      data: transationUpate,
+      status: 200,
+      message: 'Statut de la transaction mis à jour avec succès',
+    }
   }
 }
